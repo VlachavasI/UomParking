@@ -12,6 +12,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     // Όνομα πίνακα και στήλες
     public static final String TABLE_PARKING = "ParkingSessions";
+    public static final String COLUMN_ID = "_id";
     public static final String COLUMN_PLATE = "Plate";
     public static final String COLUMN_LOCATION = "Location";
     public static final String COLUMN_DURATION = "Duration";
@@ -19,7 +20,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     // SQL για δημιουργία του πίνακα
     private static final String TABLE_CREATE =
             "CREATE TABLE " + TABLE_PARKING + " (" +
-                    COLUMN_PLATE + " TEXT PRIMARY KEY, " +
+                    COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    COLUMN_PLATE + " TEXT, " +
                     COLUMN_LOCATION + " TEXT, " +
                     COLUMN_DURATION + " TEXT);";
 

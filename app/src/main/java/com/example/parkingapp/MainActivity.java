@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                 "Κέντρο",
                 "Βενιζέλου",
                 "Παπάφη",
-                "Νέα Ελβετία"
+                "Νέα Ελβετία",
                 "mikro pouli"
         };
 
