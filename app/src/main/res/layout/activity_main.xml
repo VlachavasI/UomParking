@@ -8,60 +8,73 @@
 
     <EditText
         android:id="@+id/editPlate"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:autofillHints="name"
         android:ems="10"
         android:inputType="textCapCharacters"
-        android:text="@string/car_plate"
-        app:layout_constraintBottom_toTopOf="@+id/editDuration"
+        android:hint="@string/car_plate"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginTop="32dp"
         tools:ignore="LabelFor" />
 
     <Spinner
         android:id="@+id/editLocation"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/editDuration"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editPlate"
-        app:layout_constraintVertical_bias="0.515" />
+        android:layout_marginTop="16dp" />
 
     <Spinner
         android:id="@+id/editDuration"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.499" />
+        app:layout_constraintTop_toBottomOf="@+id/editLocation"
+        android:layout_marginTop="16dp" />
 
     <Button
         android:id="@+id/btnStart"
-        android:layout_width="153dp"
-        android:layout_height="85dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:text="Έναρξη Στάθμευσης"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/btnGoToAddPoints"
         app:layout_constraintTop_toBottomOf="@+id/editDuration"
+        android:layout_marginTop="32dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         tools:ignore="HardcodedText" />
 
     <Button
         android:id="@+id/btnGoToAddPoints"
-        android:layout_width="143dp"
-        android:layout_height="78dp"
-        android:layout_gravity="center"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:text="Προσθήκη Park Points"
         app:layout_constraintEnd_toStartOf="@+id/btnStart"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="515dp" />
+        app:layout_constraintTop_toTopOf="@+id/btnStart"
+        app:layout_constraintBottom_toBottomOf="@+id/btnStart"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp" />
+
+    <Button
+        android:id="@+id/btnGoToAdminLogin"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Admin Login"
+        app:layout_constraintTop_toBottomOf="@+id/btnStart"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

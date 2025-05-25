@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     Spinner editDuration;
     Button btnStart;
     Button btnGoToAddPoints;
+    Button btnGoToAdminLogin; // New button for admin login
     private ParkingDatabase db;
 
 
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         editDuration = findViewById(R.id.editDuration);
         btnStart = findViewById(R.id.btnStart);
         btnGoToAddPoints = findViewById(R.id.btnGoToAddPoints);
+        btnGoToAdminLogin = findViewById(R.id.btnGoToAdminLogin); // Initialize the new button
         db = new ParkingDatabase(this);
 
         String[] locations = {
@@ -72,12 +74,11 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-
-                ParkingDatabase db = new ParkingDatabase(MainActivity.this);
+                ParkingDatabase db = new ParkingDatabase(MainActivity.this); // Re-instantiating, consider making it a field or singleton
                 db.insertParkingSession(plate, location, duration);
 
                 Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε!", Toast.LENGTH_SHORT).show();
-                
+
             }
         });
 
@@ -89,5 +90,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Set OnClickListener for the new admin login button
+        btnGoToAdminLogin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AdminLoginActivity.class); // Will navigate to Admin Login
+                startActivity(intent);
+            }
+        });
     }
 }
