@@ -22,6 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddPointsActivity" />
+        <activity android:name=".AdminLoginActivity" />  <activity android:name=".AdminDashboardActivity" />
     </application>
+
 
 </manifest>
