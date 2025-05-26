@@ -10,6 +10,7 @@
         android:id="@+id/editPlate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:autofillHints="name"
         android:ems="10"
         android:inputType="textCapCharacters"
         android:text="@string/car_plate"
@@ -17,7 +18,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:autofillHints="name"
         tools:ignore="LabelFor" />
 
     <Spinner
@@ -43,13 +43,25 @@
 
     <Button
         android:id="@+id/btnStart"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="153dp"
+        android:layout_height="85dp"
         android:text="Έναρξη Στάθμευσης"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btnGoToAddPoints"
         app:layout_constraintTop_toBottomOf="@+id/editDuration"
         tools:ignore="HardcodedText" />
+
+    <Button
+        android:id="@+id/btnGoToAddPoints"
+        android:layout_width="143dp"
+        android:layout_height="78dp"
+        android:layout_gravity="center"
+        android:text="Προσθήκη Park Points"
+        app:layout_constraintEnd_toStartOf="@+id/btnStart"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="515dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

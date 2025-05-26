@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+import android.content.Intent;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     Spinner editLocation;
     Spinner editDuration;
     Button btnStart;
+    Button btnGoToAddPoints;
+    private ParkingDatabase db;
 
 
     @Override
@@ -27,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
         editLocation = findViewById(R.id.editLocation);
         editDuration = findViewById(R.id.editDuration);
         btnStart = findViewById(R.id.btnStart);
+        btnGoToAddPoints = findViewById(R.id.btnGoToAddPoints);
+        db = new ParkingDatabase(this);
 
         String[] locations = {
                 "Επιλέξτε τοποθεσία",
@@ -72,6 +77,14 @@ public class MainActivity extends AppCompatActivity {
 
                 Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε!", Toast.LENGTH_SHORT).show();
                 
+            }
+        });
+
+        btnGoToAddPoints.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, AddPointsActivity.class);
+                startActivity(intent);
             }
         });
 
