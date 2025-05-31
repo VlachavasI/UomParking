@@ -38,8 +38,7 @@ public class MainActivity extends AppCompatActivity {
                 "Κέντρο",
                 "Βενιζέλου",
                 "Παπάφη",
-                "Νέα Ελβετία",
-                "mikro pouli"
+                "Νέα Ελβετία"
         };
 
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
