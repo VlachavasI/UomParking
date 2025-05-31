@@ -45,12 +45,20 @@
         android:id="@+id/txtFee"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:layout_marginTop="192dp"
+=======
+        android:layout_marginTop="32dp"
+>>>>>>> origin/Vlachavas
         android:text="Estimated Cost: $0.00"
         android:textColor="@color/black"
         android:textSize="30sp"
         app:layout_constraintEnd_toEndOf="parent"
+<<<<<<< HEAD
         app:layout_constraintHorizontal_bias="0.474"
+=======
+        app:layout_constraintHorizontal_bias="0.473"
+>>>>>>> origin/Vlachavas
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/txtTime" />
 
