@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     Spinner editDuration;
     Button btnStart;
     Button btnGoToAddPoints;
+    String location, duration, plate;
     private ParkingDatabase db;
 
 
@@ -38,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
                 "Κέντρο",
                 "Βενιζέλου",
                 "Παπάφη",
-                "Νέα Ελβετία",
-                "mikro pouli"
+                "Νέα Ελβετία"
         };
 
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
@@ -77,14 +77,17 @@ public class MainActivity extends AppCompatActivity {
                 db.insertParkingSession(plate, location, duration);
 
                 Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε!", Toast.LENGTH_SHORT).show();
-                
+
             }
         });
 
         btnGoToAddPoints.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddPointsActivity.class);
+                Intent intent = new Intent(MainActivity.this, TimerActivity.class);
+                intent.putExtra("location", location);
+                intent.putExtra("time", duration);
+                intent.putExtra("license", plate);
                 startActivity(intent);
             }
         });
