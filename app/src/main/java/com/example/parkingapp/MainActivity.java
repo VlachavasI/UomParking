@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     Spinner editDuration;
     Button btnStart;
     Button btnGoToAddPoints;
-    Button btnGoToAdminLogin; // New button for admin login
+    String location, duration, plate;
     private ParkingDatabase db;
 
 
@@ -32,7 +32,6 @@ public class MainActivity extends AppCompatActivity {
         editDuration = findViewById(R.id.editDuration);
         btnStart = findViewById(R.id.btnStart);
         btnGoToAddPoints = findViewById(R.id.btnGoToAddPoints);
-        btnGoToAdminLogin = findViewById(R.id.btnGoToAdminLogin); // Initialize the new button
         db = new ParkingDatabase(this);
 
         String[] locations = {
@@ -40,8 +39,7 @@ public class MainActivity extends AppCompatActivity {
                 "Κέντρο",
                 "Βενιζέλου",
                 "Παπάφη",
-                "Νέα Ελβετία",
-                "mikro pouli"
+                "Νέα Ελβετία"
         };
 
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
@@ -74,7 +72,8 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                ParkingDatabase db = new ParkingDatabase(MainActivity.this); // Re-instantiating, consider making it a field or singleton
+
+                ParkingDatabase db = new ParkingDatabase(MainActivity.this);
                 db.insertParkingSession(plate, location, duration);
 
                 Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε!", Toast.LENGTH_SHORT).show();
@@ -85,18 +84,13 @@ public class MainActivity extends AppCompatActivity {
         btnGoToAddPoints.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AddPointsActivity.class);
+                Intent intent = new Intent(MainActivity.this, TimerActivity.class);
+                intent.putExtra("location", location);
+                intent.putExtra("time", duration);
+                intent.putExtra("license", plate);
                 startActivity(intent);
             }
         });
 
-        // Set OnClickListener for the new admin login button
-        btnGoToAdminLogin.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AdminLoginActivity.class); // Will navigate to Admin Login
-                startActivity(intent);
-            }
-        });
     }
 }
