@@ -11,8 +11,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+<<<<<<< HEAD
 import android.location.Geocoder;
 import android.location.Address;
+=======
+>>>>>>> origin/master
 
 import java.util.List;
 import java.util.Locale;
