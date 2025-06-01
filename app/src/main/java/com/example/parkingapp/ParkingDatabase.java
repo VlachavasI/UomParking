@@ -122,6 +122,25 @@ public class ParkingDatabase {
         }
     }
 
+    public List<ParkingSession> getAllParkingSessions() {
+        List<ParkingSession> sessions = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(DatabaseHelper.TABLE_PARKING_HISTORY, null, null, null, null, null, null);
+
+        while (cursor.moveToNext()) {
+            String plate = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PLATE));
+            String location = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_LOCATION));
+            String duration = cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.HISTORY_COLUMN_DURATION_STR));
+
+            sessions.add(new ParkingSession(plate, location, duration));
+        }
+
+        cursor.close();
+        db.close();
+        return sessions;
+    }
+
 
     // --- Park Points Balance Operations (minor refactoring to avoid redundant DB close) ---
 
