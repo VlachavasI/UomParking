@@ -23,37 +23,41 @@ public class ParkingDatabase {
         values.put(DatabaseHelper.COLUMN_DURATION, duration);
 
         db.insert(DatabaseHelper.TABLE_PARKING, null, values);
-        db.close();
+        // db.close(); // REMOVED: Do not close here
     }
     //evala ta PP
     public void addParkPoints(int points) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SQLiteDatabase db = dbHelper.getWritableDatabase(); // Get a writable database instance
         ContentValues values = new ContentValues();
         values.put(DatabaseHelper.COLUMN_USER_ID, USER_ID);
-        values.put(DatabaseHelper.COLUMN_PARK_POINTS, points);
+        // Do NOT put points directly here for update, you'll calculate it below
 
         // elexos tou user
+        // Use the same db object for query or get a readable one, but be consistent
         Cursor cursor = db.query(DatabaseHelper.TABLE_USER_BALANCE,
-                new String[]{DatabaseHelper.COLUMN_USER_ID},
+                new String[]{DatabaseHelper.COLUMN_USER_ID, DatabaseHelper.COLUMN_PARK_POINTS}, // Also query for current points
                 DatabaseHelper.COLUMN_USER_ID + " = ?",
                 new String[]{USER_ID}, null, null, null);
 
         if (cursor.getCount() > 0) {
+            cursor.moveToFirst(); // Move to the first (and only) result
+            int currentPoints = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARK_POINTS));
             // enhmerwsh balance
-            int currentPoints = getParkPoints();
             values.put(DatabaseHelper.COLUMN_PARK_POINTS, currentPoints + points);
             db.update(DatabaseHelper.TABLE_USER_BALANCE, values,
                     DatabaseHelper.COLUMN_USER_ID + " = ?", new String[]{USER_ID});
         } else {
+            // For new user, set initial points
+            values.put(DatabaseHelper.COLUMN_PARK_POINTS, points);
             db.insert(DatabaseHelper.TABLE_USER_BALANCE, null, values);
         }
         cursor.close();
-        db.close();
+        // db.close(); // REMOVED: Do not close here
     }
 
     // Get Park Points
     public int getParkPoints() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteDatabase db = dbHelper.getReadableDatabase(); // Get a readable database instance
         Cursor cursor = db.query(DatabaseHelper.TABLE_USER_BALANCE,
                 new String[]{DatabaseHelper.COLUMN_PARK_POINTS},
                 DatabaseHelper.COLUMN_USER_ID + " = ?",
@@ -64,7 +68,7 @@ public class ParkingDatabase {
             points = cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.COLUMN_PARK_POINTS));
         }
         cursor.close();
-        db.close();
+        // db.close(); // REMOVED: Do not close here
         return points;
     }
 }
