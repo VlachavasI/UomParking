@@ -20,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     Button btnStart;
     Button btnGoToAddPoints;
     Button btnGoToAdminLogin;
+    Button btnGoToUserStatistics;
     private ParkingDatabase db;
     private TextView textCurrentParkPoints;
 
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         btnGoToAddPoints = findViewById(R.id.btnGoToAddPoints);
         btnGoToAdminLogin = findViewById(R.id.btnGoToAdminLogin);
         textCurrentParkPoints = findViewById(R.id.textCurrentParkPoints);
+        btnGoToUserStatistics = findViewById(R.id.btnGoToUserStatistics);
 
         db = new ParkingDatabase(this);
 
@@ -171,6 +173,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, AdminLoginActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        btnGoToUserStatistics.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, UserStatisticsActivity.class);
                 startActivity(intent);
             }
         });
