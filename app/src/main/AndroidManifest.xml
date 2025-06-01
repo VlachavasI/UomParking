@@ -36,6 +36,7 @@
         <activity android:name=".AdminLoginActivity" />
         <activity android:name=".AdminDashboardActivity" />
         <activity android:name=".ParkingAreaManagementActivity" />
+        <activity android:name=".StatisticsActivity" />
     </application>
 
 </manifest>

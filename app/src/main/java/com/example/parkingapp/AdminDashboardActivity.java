@@ -3,9 +3,9 @@ package com.example.parkingapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button; // Import Button
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast; // Import Toast
+import android.widget.Toast; // Remove this import if no other toasts are used here
 import androidx.appcompat.app.AppCompatActivity;
 
 public class AdminDashboardActivity extends AppCompatActivity {
@@ -37,10 +37,9 @@ public class AdminDashboardActivity extends AppCompatActivity {
         btnViewStatistics.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // We'll create this Activity later for R7 (StatisticsActivity)
-                // Intent intent = new Intent(AdminDashboardActivity.this, StatisticsActivity.class);
-                // startActivity(intent);
-                Toast.makeText(AdminDashboardActivity.this, "Statistics feature coming soon!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AdminDashboardActivity.this, StatisticsActivity.class); // Uncomment this line
+                startActivity(intent); // Uncomment this line
+                // Toast.makeText(AdminDashboardActivity.this, "Statistics feature coming soon!", Toast.LENGTH_SHORT).show(); // Remove or comment this line
             }
         });
     }
