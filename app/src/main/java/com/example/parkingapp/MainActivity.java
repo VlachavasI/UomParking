@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 // 2. Calculate parking points needed
                 int pointsNeeded = 0;
                 switch (duration) {
-                    case "30 λεπτάk":
+                    case "30 λεπτά":
                         pointsNeeded = COST_PER_30_MIN_PP;
                         break;
                     case "1 ώρα":
