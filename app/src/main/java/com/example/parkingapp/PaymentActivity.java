@@ -1,20 +1,31 @@
 package com.example.parkingapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import java.util.Locale; // Keep Locale if you use String.format for other display
+import android.widget.Toast;
+//<<<<<<< HEAD
+import android.location.Geocoder;
+import android.location.Address;
+//=======
+//>>>>>>> origin/master
+
+import java.util.List;
+import java.util.Locale;
 
 public class PaymentActivity extends AppCompatActivity{
 
-    private TextView txtSummary, txtFinalCostDisplay, txtLocation, txtRemainingParkPoints;
-    private Button btnBackToMain;
+    private TextView txtSummary, txtCost, txtLocation;
+    private Button btnPayNow;
+    private String location;  // store globally
 
-    private ParkingDatabase db; // For getting remaining park points
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,42 +33,31 @@ public class PaymentActivity extends AppCompatActivity{
         setContentView(R.layout.activity_payment);
 
         txtSummary = findViewById(R.id.txtSummary);
-        txtFinalCostDisplay = findViewById(R.id.txtFinalCostDisplay);
-        txtLocation = findViewById(R.id.txtLocation);
-        txtRemainingParkPoints = findViewById(R.id.txtRemainingParkPoints);
-        btnBackToMain = findViewById(R.id.btnBackToMain);
+        txtCost = findViewById(R.id.txtCost);
+        btnPayNow = findViewById(R.id.btnPayNow);
 
-        db = new ParkingDatabase(this); // Initialize database for fetching points
 
-        // Get data from intent passed from TimerActivity
+        // Get data from intent
         Intent intent = getIntent();
+        double finalCost = intent.getDoubleExtra("finalCost", 0.0);
         String totalTime = intent.getStringExtra("totalTime");
         String location = intent.getStringExtra("location");
-        int costInPoints = intent.getIntExtra("costInPoints", 0); // *** RECEIVE costInPoints ***
+        txtLocation = findViewById(R.id.txtLocation);
+        txtLocation.setText("Location: " + location);
 
         // Set values to views
         txtSummary.setText("Total Time Parked: " + totalTime);
-        txtLocation.setText("Location: " + location);
-        txtFinalCostDisplay.setText("Parking Cost: " + costInPoints + " Park Points"); // *** DISPLAY costInPoints ***
+        txtCost.setText(String.format(Locale.getDefault(), "Total Cost: $%.2f", finalCost));
 
-        // Display remaining Park Points
-        updateRemainingParkPointsDisplay();
-
-        btnBackToMain.setOnClickListener(new View.OnClickListener() {
+        btnPayNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Return to MainActivity
-                Intent mainIntent = new Intent(PaymentActivity.this, MainActivity.class);
-                mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK); // Clears activity stack
-                startActivity(mainIntent);
-                finish(); // Finish PaymentActivity
+                // Simulate payment success
+                Toast.makeText(PaymentActivity.this, "Payment Successful!", Toast.LENGTH_LONG).show();
+
+                // You can also go back to main screen, or show receipt, etc.
+                finish(); // Closes the activity
             }
         });
-    }
-
-    // Helper method to display remaining Park Points
-    private void updateRemainingParkPointsDisplay() {
-        int remainingPoints = db.getParkPoints();
-        txtRemainingParkPoints.setText("Remaining Park Points: " + remainingPoints);
     }
 }

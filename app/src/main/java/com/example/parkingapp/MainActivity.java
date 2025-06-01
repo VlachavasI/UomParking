@@ -8,7 +8,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.content.Intent;
-import android.widget.TextView;
+import android.widget.TextView; // Important: Added this import for TextView
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,13 +19,14 @@ public class MainActivity extends AppCompatActivity {
     Spinner editDuration;
     Button btnStart;
     Button btnGoToAddPoints;
-    Button btnGoToAdminLogin;
+    Button btnGoToAdminLogin; // New button for admin login
     private ParkingDatabase db;
-    private TextView textCurrentParkPoints;
+    private TextView textCurrentParkPoints; // Declare TextView for points display
 
-    // Hardcoded parking point rules (ensure these match ParkingDatabase.java)
+    // Hardcoded parking point rules
     private static final int COST_PER_HOUR_PP = 10;
-    private static final int COST_PER_30_MIN_PP = 5;
+    private static final int COST_PER_30_MIN_PP = 5; // 30 minutes is half an hour
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,8 +38,8 @@ public class MainActivity extends AppCompatActivity {
         editDuration = findViewById(R.id.editDuration);
         btnStart = findViewById(R.id.btnStart);
         btnGoToAddPoints = findViewById(R.id.btnGoToAddPoints);
-        btnGoToAdminLogin = findViewById(R.id.btnGoToAdminLogin);
-        textCurrentParkPoints = findViewById(R.id.textCurrentParkPoints);
+        btnGoToAdminLogin = findViewById(R.id.btnGoToAdminLogin); // Initialize the new button
+        textCurrentParkPoints = findViewById(R.id.textCurrentParkPoints); // Initialize TextView
 
         db = new ParkingDatabase(this);
 
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initial update of park points display when activity starts
         updateParkPointsDisplay();
+
 
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,41 +119,29 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                // 5. If all checks pass, deduct points first (as discussed, this is the order)
-                boolean pointsDeducted = db.deductParkPoints(pointsNeeded);
+                // 5. If all checks pass, attempt to insert parking session first
+                boolean sessionInserted = db.insertParkingSession(plate, location, duration);
 
-                if (pointsDeducted) {
-                    // Get the current time in milliseconds BEFORE inserting the session
-                    long startTimeMillis = System.currentTimeMillis();
+                if (sessionInserted) {
+                    // 6. If session inserted successfully, then deduct points
+                    boolean pointsDeducted = db.deductParkPoints(pointsNeeded);
 
-                    // 6. Attempt to insert parking session with the start time
-                    boolean sessionInserted = db.insertParkingSession(plate, location, duration, startTimeMillis); // <--- THIS IS THE MODIFIED LINE
-
-                    if (sessionInserted) {
+                    if (pointsDeducted) {
                         Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε και " + pointsNeeded + " Park Points αφαιρέθηκαν!", Toast.LENGTH_LONG).show();
                         // Clear fields after successful insertion and deduction
                         editPlate.setText("");
-                        editLocation.setSelection(0);
-                        editDuration.setSelection(0);
-
-                        // Start TimerActivity and pass necessary data
-                        Intent timerIntent = new Intent(MainActivity.this, TimerActivity.class);
-                        timerIntent.putExtra("plate", plate);
-                        timerIntent.putExtra("location", location);
-                        timerIntent.putExtra("pointsNeeded", pointsNeeded); // Pass the points
-                        // No need to pass startTimeMillis to TimerActivity unless TimerActivity itself needs to display remaining time
-                        // or has a timer that depends on the actual start time (which it should, but not directly for this insert issue).
-                        startActivity(timerIntent);
+                        editLocation.setSelection(0); // Reset spinner
+                        editDuration.setSelection(0); // Reset spinner
                     } else {
-                        // This else block handles the case where insertParkingSession returns false.
-                        // Ideally, this should not be reached due to the `isPlateParked` check above.
-                        // If it is reached, it implies a race condition or other issue.
-                        // In this scenario, since points were already deducted, you would need to refund them.
-                        db.addParkPoints(pointsNeeded); // Refund points
-                        Toast.makeText(MainActivity.this, "Αποτυχία καταχώρησης συνεδρίας. Επιστροφή Park Points.", Toast.LENGTH_LONG).show();
+                        // This case should ideally not happen if deductParkPoints logic is correct.
+                        // If points deduction fails AFTER session insertion, it's an inconsistent state.
+                        // You might want to add logic to revert the session insertion or log this error.
+                        Toast.makeText(MainActivity.this, "Συνεδρία καταχωρήθηκε, αλλά υπήρξε σφάλμα στην αφαίρεση Park Points.", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(MainActivity.this, "Αποτυχία αφαίρεσης Park Points. Παρακαλώ δοκιμάστε ξανά.", Toast.LENGTH_LONG).show();
+                    // This else block should theoretically not be reached because `isPlateParked`
+                    // check is performed beforehand. It's here for robustness.
+                    Toast.makeText(MainActivity.this, "Αποτυχία καταχώρησης συνεδρίας.", Toast.LENGTH_SHORT).show();
                 }
 
                 // Always update Park Points display after any attempt to start a session
@@ -167,10 +157,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Set OnClickListener for the admin login button
         btnGoToAdminLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AdminLoginActivity.class);
+                Intent intent = new Intent(MainActivity.this, AdminLoginActivity.class); // Will navigate to Admin Login Activity
                 startActivity(intent);
             }
         });
@@ -179,9 +170,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        // Update points display every time MainActivity becomes active (e.g., returning from AddPointsActivity)
         updateParkPointsDisplay();
     }
 
+    // Method to update the displayed Park Points
     private void updateParkPointsDisplay() {
         int points = db.getParkPoints();
         textCurrentParkPoints.setText("Διαθέσιμοι Park Points: " + points);
