@@ -11,7 +11,7 @@ public class StatisticsActivity extends AppCompatActivity {
     private TextView textViewMostPopularLocation;
     private TextView textViewAverageDuration;
 
-    private ParkingDatabase db; // We'll use this to fetch statistics
+    private ParkingDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,15 +25,21 @@ public class StatisticsActivity extends AppCompatActivity {
 
         db = new ParkingDatabase(this);
 
-        // Call a method to load and display statistics
         loadStatistics();
     }
 
     private void loadStatistics() {
-        // Placeholder values for now. We will replace these with actual database calls.
-        textViewTotalCarsParked.setText("Total Parking Sessions: N/A");
-        textViewTotalRevenue.setText("Total Revenue (PPs): N/A");
-        textViewMostPopularLocation.setText("Most Popular Location: N/A");
-        textViewAverageDuration.setText("Average Parking Duration: N/A");
+        // Fetch data from ParkingDatabase and update TextViews
+        int totalSessions = db.getTotalParkingSessions();
+        textViewTotalCarsParked.setText("Total Parking Sessions: " + totalSessions);
+
+        double totalRevenue = db.getTotalRevenue();
+        textViewTotalRevenue.setText(String.format("Total Revenue (PPs): %.2f", totalRevenue));
+
+        String mostPopularLocation = db.getMostPopularLocation();
+        textViewMostPopularLocation.setText("Most Popular Location: " + mostPopularLocation);
+
+        String averageDuration = db.getAverageParkingDuration();
+        textViewAverageDuration.setText("Average Parking Duration: " + averageDuration);
     }
 }

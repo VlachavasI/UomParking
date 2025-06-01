@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 import android.content.Intent;
+import android.widget.TextView; // Important: Added this import for TextView
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -20,11 +21,11 @@ public class MainActivity extends AppCompatActivity {
     Button btnGoToAddPoints;
     Button btnGoToAdminLogin; // New button for admin login
     private ParkingDatabase db;
+    private TextView textCurrentParkPoints; // Declare TextView for points display
 
     // Hardcoded parking point rules
     private static final int COST_PER_HOUR_PP = 10;
     private static final int COST_PER_30_MIN_PP = 5; // 30 minutes is half an hour
-
 
 
     @Override
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
         btnStart = findViewById(R.id.btnStart);
         btnGoToAddPoints = findViewById(R.id.btnGoToAddPoints);
         btnGoToAdminLogin = findViewById(R.id.btnGoToAdminLogin); // Initialize the new button
+        textCurrentParkPoints = findViewById(R.id.textCurrentParkPoints); // Initialize TextView
+
         db = new ParkingDatabase(this);
 
         String[] locations = {
@@ -45,8 +48,7 @@ public class MainActivity extends AppCompatActivity {
                 "Κέντρο",
                 "Βενιζέλου",
                 "Παπάφη",
-                "Νέα Ελβετία",
-                "mikro pouli"
+                "Νέα Ελβετία"
         };
 
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<>(
@@ -67,6 +69,10 @@ public class MainActivity extends AppCompatActivity {
         durationAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         editDuration.setAdapter(durationAdapter);
 
+        // Initial update of park points display when activity starts
+        updateParkPointsDisplay();
+
+
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,52 +80,72 @@ public class MainActivity extends AppCompatActivity {
                 String location = editLocation.getSelectedItem().toString();
                 String duration = editDuration.getSelectedItem().toString();
 
+                // 1. Input validation
                 if (plate.isEmpty() || location.equals("Επιλέξτε τοποθεσία") || duration.equals("Επιλέξτε διάρκεια")) {
                     Toast.makeText(MainActivity.this, "Συμπληρώστε όλα τα πεδία!!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // Calculate parking points needed
+
+                // 2. Calculate parking points needed
                 int pointsNeeded = 0;
                 switch (duration) {
                     case "30 λεπτά":
-                        pointsNeeded = COST_PER_30_MIN_PP; // 5 PP
+                        pointsNeeded = COST_PER_30_MIN_PP;
                         break;
                     case "1 ώρα":
-                        pointsNeeded = COST_PER_HOUR_PP; // 10 PP
+                        pointsNeeded = COST_PER_HOUR_PP;
                         break;
                     case "2 ώρες":
-                        pointsNeeded = COST_PER_HOUR_PP * 2; // 20 PP
+                        pointsNeeded = COST_PER_HOUR_PP * 2;
                         break;
                     case "3 ώρες":
-                        pointsNeeded = COST_PER_HOUR_PP * 3; // 30 PP
+                        pointsNeeded = COST_PER_HOUR_PP * 3;
                         break;
                     default:
                         Toast.makeText(MainActivity.this, "Επιλέξτε έγκυρη διάρκεια!", Toast.LENGTH_SHORT).show();
                         return;
                 }
 
-                // Check if user has enough park points
-                if (db.getParkPoints() < pointsNeeded) {
-                    Toast.makeText(MainActivity.this, "Δεν έχετε αρκετούς Park Points! (Απαιτούνται: " + pointsNeeded + ", Υπάρχουν: " + db.getParkPoints() + ")", Toast.LENGTH_LONG).show();
+                // 3. Check if plate is already parked to prevent UNIQUE constraint violation
+                if (db.isPlateParked(plate)) {
+                    Toast.makeText(MainActivity.this, "Το όχημα με αυτή την πινακίδα είναι ήδη σταθμευμένο!", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                // Deduct points and insert parking session
-                if (db.deductParkPoints(pointsNeeded)) {
-                    db.insertParkingSession(plate, location, duration);
-                    Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε! (-" + pointsNeeded + " PP)", Toast.LENGTH_LONG).show();
-                    editPlate.setText(""); // Clear plate field after successful session start
-                    // Optionally reset spinners or navigate away
-                } else {
-                    // This case should ideally be caught by the getParkPoints() check above, but good for robust error handling
-                    Toast.makeText(MainActivity.this, "Αποτυχία αφαίρεσης Park Points. Παρακαλώ δοκιμάστε ξανά.", Toast.LENGTH_LONG).show();
+                // 4. Check if user has enough points
+                int currentPoints = db.getParkPoints();
+                if (currentPoints < pointsNeeded) {
+                    Toast.makeText(MainActivity.this, "Δεν έχετε αρκετούς Park Points! Απαιτούνται: " + pointsNeeded + ", Διαθέσιμα: " + currentPoints, Toast.LENGTH_LONG).show();
+                    return;
                 }
 
-                ParkingDatabase db = new ParkingDatabase(MainActivity.this); // Re-instantiating, consider making it a field or singleton
-                db.insertParkingSession(plate, location, duration);
+                // 5. If all checks pass, attempt to insert parking session first
+                boolean sessionInserted = db.insertParkingSession(plate, location, duration);
 
-                Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε!", Toast.LENGTH_SHORT).show();
+                if (sessionInserted) {
+                    // 6. If session inserted successfully, then deduct points
+                    boolean pointsDeducted = db.deductParkPoints(pointsNeeded);
 
+                    if (pointsDeducted) {
+                        Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε και " + pointsNeeded + " Park Points αφαιρέθηκαν!", Toast.LENGTH_LONG).show();
+                        // Clear fields after successful insertion and deduction
+                        editPlate.setText("");
+                        editLocation.setSelection(0); // Reset spinner
+                        editDuration.setSelection(0); // Reset spinner
+                    } else {
+                        // This case should ideally not happen if deductParkPoints logic is correct.
+                        // If points deduction fails AFTER session insertion, it's an inconsistent state.
+                        // You might want to add logic to revert the session insertion or log this error.
+                        Toast.makeText(MainActivity.this, "Συνεδρία καταχωρήθηκε, αλλά υπήρξε σφάλμα στην αφαίρεση Park Points.", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    // This else block should theoretically not be reached because `isPlateParked`
+                    // check is performed beforehand. It's here for robustness.
+                    Toast.makeText(MainActivity.this, "Αποτυχία καταχώρησης συνεδρίας.", Toast.LENGTH_SHORT).show();
+                }
+
+                // Always update Park Points display after any attempt to start a session
+                updateParkPointsDisplay();
             }
         });
 
@@ -131,13 +157,26 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Set OnClickListener for the new admin login button
+        // Set OnClickListener for the admin login button
         btnGoToAdminLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, AdminLoginActivity.class); // Will navigate to Admin Login
+                Intent intent = new Intent(MainActivity.this, AdminLoginActivity.class); // Will navigate to Admin Login Activity
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Update points display every time MainActivity becomes active (e.g., returning from AddPointsActivity)
+        updateParkPointsDisplay();
+    }
+
+    // Method to update the displayed Park Points
+    private void updateParkPointsDisplay() {
+        int points = db.getParkPoints();
+        textCurrentParkPoints.setText("Διαθέσιμοι Park Points: " + points);
     }
 }
