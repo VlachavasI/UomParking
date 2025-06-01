@@ -71,4 +71,22 @@ public class ParkingDatabase {
         // db.close(); // REMOVED: Do not close here
         return points;
     }
+    // NEW METHOD: Deduct Park Points
+    public boolean deductParkPoints(int pointsToDeduct) {
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+
+        int currentPoints = getParkPoints(); // Use existing method to get current points
+
+        if (currentPoints >= pointsToDeduct) {
+            // Enough points, proceed with deduction
+            values.put(DatabaseHelper.COLUMN_PARK_POINTS, currentPoints - pointsToDeduct);
+            int rowsAffected = db.update(DatabaseHelper.TABLE_USER_BALANCE, values,
+                    DatabaseHelper.COLUMN_USER_ID + " = ?", new String[]{USER_ID});
+            return rowsAffected > 0; // Return true if deduction was successful
+        } else {
+            // Not enough points
+            return false;
+        }
+    }
 }

@@ -21,6 +21,11 @@ public class MainActivity extends AppCompatActivity {
     Button btnGoToAdminLogin; // New button for admin login
     private ParkingDatabase db;
 
+    // Hardcoded parking point rules
+    private static final int COST_PER_HOUR_PP = 10;
+    private static final int COST_PER_30_MIN_PP = 5; // 30 minutes is half an hour
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +77,42 @@ public class MainActivity extends AppCompatActivity {
                 if (plate.isEmpty() || location.equals("Επιλέξτε τοποθεσία") || duration.equals("Επιλέξτε διάρκεια")) {
                     Toast.makeText(MainActivity.this, "Συμπληρώστε όλα τα πεδία!!", Toast.LENGTH_SHORT).show();
                     return;
+                }
+                // Calculate parking points needed
+                int pointsNeeded = 0;
+                switch (duration) {
+                    case "30 λεπτά":
+                        pointsNeeded = COST_PER_30_MIN_PP; // 5 PP
+                        break;
+                    case "1 ώρα":
+                        pointsNeeded = COST_PER_HOUR_PP; // 10 PP
+                        break;
+                    case "2 ώρες":
+                        pointsNeeded = COST_PER_HOUR_PP * 2; // 20 PP
+                        break;
+                    case "3 ώρες":
+                        pointsNeeded = COST_PER_HOUR_PP * 3; // 30 PP
+                        break;
+                    default:
+                        Toast.makeText(MainActivity.this, "Επιλέξτε έγκυρη διάρκεια!", Toast.LENGTH_SHORT).show();
+                        return;
+                }
+
+                // Check if user has enough park points
+                if (db.getParkPoints() < pointsNeeded) {
+                    Toast.makeText(MainActivity.this, "Δεν έχετε αρκετούς Park Points! (Απαιτούνται: " + pointsNeeded + ", Υπάρχουν: " + db.getParkPoints() + ")", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Deduct points and insert parking session
+                if (db.deductParkPoints(pointsNeeded)) {
+                    db.insertParkingSession(plate, location, duration);
+                    Toast.makeText(MainActivity.this, "Συνεδρία στάθμευσης καταχωρήθηκε! (-" + pointsNeeded + " PP)", Toast.LENGTH_LONG).show();
+                    editPlate.setText(""); // Clear plate field after successful session start
+                    // Optionally reset spinners or navigate away
+                } else {
+                    // This case should ideally be caught by the getParkPoints() check above, but good for robust error handling
+                    Toast.makeText(MainActivity.this, "Αποτυχία αφαίρεσης Park Points. Παρακαλώ δοκιμάστε ξανά.", Toast.LENGTH_LONG).show();
                 }
 
                 ParkingDatabase db = new ParkingDatabase(MainActivity.this); // Re-instantiating, consider making it a field or singleton
