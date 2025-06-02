@@ -91,7 +91,6 @@ public class ParkingSession {
     // Utility methods
     public int getDurationInMinutes() {
         try {
-            // Parse duration string (assuming format like "120 minutes" or "2 hours")
             String[] parts = duration.split(" ");
             if (parts.length >= 2) {
                 int value = Integer.parseInt(parts[0]);

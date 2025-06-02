@@ -408,7 +408,8 @@ public class ParkingDatabase {
         // Convert milliseconds to a readable format (hours, minutes)
         long hours = TimeUnit.MILLISECONDS.toHours((long) averageMillis);
         long minutes = TimeUnit.MILLISECONDS.toMinutes((long) averageMillis) % 60;
+        long seconds = TimeUnit.MILLISECONDS.toSeconds((long) averageMillis) ;
 
-        return String.format(Locale.getDefault(), "%d hours %d minutes", hours, minutes);
+        return String.format(Locale.getDefault(), "%d hours %d minutes %d seconds", hours, minutes, seconds);
     }
 }
